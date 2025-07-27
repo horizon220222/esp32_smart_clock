@@ -38,9 +38,11 @@ static void save_to_nvs(void)
 
 static void alarm_check_task(void* arg, esp_event_base_t base, int32_t id, void* data)
 {
+    ESP_LOGI(TAG, "闹钟检查任务触发");
     app_time_t t = app_state_get_time();
     xSemaphoreTake(alarm_mgr.mux, portMAX_DELAY);
     for (size_t i = 0; i < alarm_mgr.alarm_cnt; ++i) {
+        ESP_LOGI(TAG, "闹钟检查: %d:%d==%d:%d", alarm_mgr.alarms[i].hour, alarm_mgr.alarms[i].min, t.hour, t.min);
         if (alarm_mgr.alarms[i].hour == t.hour && alarm_mgr.alarms[i].min == t.min) {
             esp_event_post(APP_EVENT, APP_STATE_ALARM_FIRED, NULL, 0, 0);
         }

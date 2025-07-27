@@ -50,7 +50,7 @@ void app_main(void)
 
     // 订阅事件
     esp_event_handler_register(APP_EVENT, APP_STATE_ALARM_FIRED, alarm_cb, NULL);
-    alarm_add(23, 40);
+    alarm_add(24, 00);
 
     // 主循环
     while (1) {
