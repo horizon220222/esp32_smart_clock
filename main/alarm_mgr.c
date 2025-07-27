@@ -20,9 +20,16 @@ static void load_from_nvs(void)
     nvs_handle_t h;
     if (nvs_open("storage", NVS_READONLY, &h) == ESP_OK) {
         size_t len = sizeof(alarm_mgr.alarms);
-        nvs_get_blob(h, ALARM_NVS_KEY, alarm_mgr.alarms, &len);
-        alarm_mgr.alarm_cnt = len / sizeof(alarm_t);
+        esp_err_t err = nvs_get_blob(h, ALARM_NVS_KEY, alarm_mgr.alarms, &len);
+        if (err == ESP_OK) {
+            alarm_mgr.alarm_cnt = len / sizeof(alarm_t);
+            ESP_LOGI(TAG, "成功从 NVS 加载 %zu 个闹钟", alarm_mgr.alarm_cnt);
+        } else {
+            ESP_LOGE(TAG, "从 NVS 加载闹钟数据失败，错误码: %d", err);
+        }
         nvs_close(h);
+    } else {
+        ESP_LOGE(TAG, "无法打开 NVS 存储");
     }
 }
 
@@ -64,9 +71,13 @@ esp_err_t alarm_mgr_init(void)
 
 esp_err_t alarm_add(uint8_t hour, uint8_t min)
 {
-    if (alarm_mgr.alarm_cnt >= ALARM_MAX) return ESP_FAIL;
+    if (alarm_mgr.alarm_cnt >= ALARM_MAX) {
+        ESP_LOGE(TAG, "闹钟数量已达到最大值，无法添加");
+        return ESP_FAIL;
+    }
     xSemaphoreTake(alarm_mgr.mux, portMAX_DELAY);
     alarm_mgr.alarms[alarm_mgr.alarm_cnt++] = (alarm_t){ .hour = hour, .min = min };
+    ESP_LOGI(TAG, "添加新闹钟: %d:%d", hour, min);
     save_to_nvs();
     xSemaphoreGive(alarm_mgr.mux);
     return ESP_OK;

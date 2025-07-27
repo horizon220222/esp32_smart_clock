@@ -27,7 +27,9 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
         app_state_set_wifi(true);
 
         esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
-        esp_sntp_setservername(0, "cn.pool.ntp.org");
+        esp_sntp_setservername(0, "ntp.aliyun.com");
+        esp_sntp_setservername(1, "cn.pool.ntp.org");
+        esp_sntp_setservername(2, "time.ustc.edu.cn");
         esp_sntp_set_time_sync_notification_cb(time_sync_notification_cb);
         esp_sntp_init();
         ESP_LOGI(TAG, "SNTP 已启用");
