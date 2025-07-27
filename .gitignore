@@ -1,0 +1,4 @@
+cmake-build-debug-esp32
+.idea
+build
+*/Espressif/*
