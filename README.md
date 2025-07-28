@@ -10,13 +10,6 @@
 ## 1. 仓库结构
 
 ```angular2html
-├── .git/                  # Git 版本控制目录
-├── .gitignore             # Git 忽略文件配置
-├── .idea/                 # IDE 项目配置目录
-├── CMakeLists.txt         # ESP-IDF 根构建文件
-├── README.md              # 项目说明文档
-├── build/                 # 编译构建输出目录
-├── cmake-build-debug-esp32/ # CMake 调试构建目录
 ├── sdkconfig              # 项目配置文件
 ├── partitions.csv         # 分区表文件（应用 + NVS 足够）
 ├── main/
@@ -35,31 +28,12 @@
 
 
 ## 2. 运行时架构
-
-```mermaid
-graph TD
-    classDef process fill:#E5F6FF,stroke:#73A6FF,stroke-width:2px;
-
-    A[main.c]:::process -->|初始化调用| B(app_state):::process
-    A -->|初始化调用| C(wifi_time):::process
-    A -->|初始化调用| D(servo_display):::process
-    A -->|初始化调用| E(alarm_mgr):::process
-
-    B -->|事件订阅/发布| C
-    B -->|事件订阅/发布| D
-    B -->|事件订阅/发布| E
-
-    C -->|时间更新| D
-    C -->|发布 APP_STATE_TIME_CHANGED| B
-    B -->|通知| E
-    E -->|发布 APP_STATE_ALARM_FIRED| B
-    B -->|通知| A
-```
+略
 
 ## 3. 模块职责
 | 模块 | 任务与接口 |
 |---------------|---------------------------------------------------------------------------------------------------------------------| 
-| wifi_time | 1. 启动 STA 模式，连接到配置的 Wi-Fi SSID 和密码（默认 SSID 为 204小居-书房，密码为 lhcj@1024）。<br>2. 通过 SNTP 获取 UTC 时间，并根据 CST-8 时区设置进行时间转换。<br>3. 提供 wifi_time_init() 初始化函数。 |
+| wifi_time | 1. 启动 STA 模式，连接到配置的 Wi-Fi SSID 和密码（默认 SSID 为xxx，密码为xxx）。<br>2. 通过 SNTP 获取 UTC 时间，并根据 CST-8 时区设置进行时间转换。<br>3. 提供 wifi_time_init() 初始化函数。 |
 | servo_display | 1. 初始化 2 * 16 路 PWM（LEDC）来驱动舵机阵列。<br>2. 提供 servo_display_set(const char *str) 接口，仅支持 "HHMM" 或 "HH:MM" 格式的字符串显示。<br>3. 提供 servo_display_init() 初始化函数，初始化完成后打印日志。 |
 | alarm_mgr | 1. 使用 NVS 持久化存储闹钟列表，最多支持 10 组闹钟。<br>2. 提供 alarm_add(uint8_t hour, uint8_t min) 用于添加闹钟。<br>3. 提供 alarm_del(uint8_t idx) 用于删除指定索引的闹钟。<br>4. 提供 alarm_list(size_t *cnt) 用于获取闹钟列表。<br>5. 当系统时间变化时，检查是否有闹钟触发，若触发则发布 APP_STATE_ALARM_FIRED 事件。 | 
 | app_state | 1. 管理应用的全局状态，包括当前时间和 Wi-Fi 连接状态。<br>2. 提供 app_state_set_wifi(bool connected) 用于设置 Wi-Fi 连接状态，状态变化时发布相应事件。<br>3. 提供 app_state_is_wifi_connected() 用于获取 Wi-Fi 连接状态。<br>4. 提供 app_state_set_time(uint8_t hour, uint8_t min) 用于设置时间，时间变化时发布 APP_STATE_TIME_CHANGED 事件。<br>5. 提供 app_state_get_time() 用于获取当前时间。 | 
@@ -70,12 +44,8 @@ graph TD
 
 ```bash
 idf.py set-target esp32    # 或 esp32
-idf.py menuconfig          # 在 Example Configuration 中填写 Wi-Fi SSID/PWD
 idf.py flash monitor
 ```
-
-- Wi-Fi 配置：在 menuconfig 的 Example Configuration 中填写 Wi-Fi SSID 和密码，默认 SSID 为 204小居-书房，密码为 lhcj@1024。
-- 时区配置：默认时区为 CST-8，可在 menuconfig 中修改。
 
 ## 5. 注意事项
 
