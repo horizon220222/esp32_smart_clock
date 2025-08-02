@@ -5,6 +5,8 @@ idf_component_register(SRCS
                     "ck_servo_display.h"
                     "ck_state.h"
                     "ck_state.c"
+                    "ck_time_ext.h"
+                    "ck_time_ext.c"
                     "ck_wifi_time.c"
                     "ck_wifi_time.h"
                     "main.c"

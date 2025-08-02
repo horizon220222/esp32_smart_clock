@@ -9,10 +9,6 @@
 #define MINUTE_TENS_BASE  16
 #define MINUTE_ONES_BASE  24
 
-// 显示角度和不显示角度
-#define DISPLAY_ANGLE 90
-#define HIDE_ANGLE    0
-
 void servo_display_init(float hz);
 void servo_display_set(uint8_t hours, uint8_t minutes);
 void set_servo_angle(uint8_t servo_num, uint8_t angle);

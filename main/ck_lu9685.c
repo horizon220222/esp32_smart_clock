@@ -1,5 +1,4 @@
 #include "ck_lu9685.h"
-#include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
@@ -7,6 +6,8 @@
 #include <inttypes.h>
 #include "rom/ets_sys.h"
 #include "hal/gpio_types.h"
+
+static const char *TAG = "ck_lu9685";
 
 // 寄存器定义
 #define LU_RESET              0xFB
@@ -181,6 +182,8 @@ void LU9685_setFreq(uint8_t lu_addr, float freq) {
  */
 void LU9685_SetSingleAngle(uint8_t lu_addr, uint8_t servo_num, uint8_t angle)
 {
+    ESP_LOGI(TAG, "LU9685_SetSingleAngle: lu_addr: %d, servo_num: %d, angle: %d", lu_addr, servo_num, angle);
+
     IIC_Start();
     Send_Byte(lu_addr);
     I2C_WaitAck();
