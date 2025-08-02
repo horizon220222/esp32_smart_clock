@@ -1,10 +1,8 @@
 #include "ck_servo_display.h"
 #include "esp_log.h"
-#include "ck_pca9685.h"
+#include "ck_lu9685.h"
 
-static const char *TAG = "ck_servo_display";
-
-const uint8_t digit_segments[10][7] = {
+const uint8_t digit_segments[11][7] = {
         {1, 1, 1, 1, 1, 1, 0}, // 0
         {0, 1, 1, 0, 0, 0, 0}, // 1
         {1, 1, 0, 1, 1, 0, 1}, // 2
@@ -14,14 +12,15 @@ const uint8_t digit_segments[10][7] = {
         {1, 0, 1, 1, 1, 1, 1}, // 6
         {1, 1, 1, 0, 0, 0, 0}, // 7
         {1, 1, 1, 1, 1, 1, 1}, // 8
-        {1, 1, 1, 1, 0, 1, 1}  // 9
+        {1, 1, 1, 1, 0, 1, 1},  // 9
+        {0, 0, 0, 0, 0, 0, 0}  // 空
 };
 
 
 void servo_display_init(float hz)
 {
-    PCA9685_Init(PCA_ADDR_1, hz, 0);
-    PCA9685_Init(PCA_ADDR_2, hz, 0);
+    LU9685_Init(PCA_ADDR_1, hz, 0);
+    LU9685_Init(PCA_ADDR_2, hz, 0);
 }
 
 uint8_t get_pca_addr(uint8_t servo_num) {
@@ -41,7 +40,7 @@ uint8_t get_actual_servo_num(uint8_t servo_num) {
 void set_servo_angle(uint8_t servo_num, uint8_t angle) {
     uint8_t pca_addr = get_pca_addr(servo_num);
     uint8_t actual_servo_num = get_actual_servo_num(servo_num);
-    PCA9685_SetAngle(pca_addr, actual_servo_num, angle);
+    LU9685_SetSingleAngle(pca_addr, actual_servo_num, angle);
 }
 
 /**
@@ -51,8 +50,6 @@ void set_servo_angle(uint8_t servo_num, uint8_t angle) {
  * @param digit 数字
  */
 void display_digit_at_segment(uint8_t segment_base, uint8_t digit) {
-    if (digit > 9) return;
-
     for (int i = 0; i < 7; i++) {
         uint8_t servo_num = segment_base + i;
         if (digit_segments[digit][i]) {

@@ -1,6 +1,6 @@
 idf_component_register(SRCS
-                    "ck_pca9685.c"
-                    "ck_pca9685.h"
+                    "ck_lu9685.c"
+                    "ck_lu9685.h"
                     "ck_servo_display.c"
                     "ck_servo_display.h"
                     "ck_state.h"

@@ -15,7 +15,6 @@ void time_sync_task(void *pv)
         struct tm time_info;
         localtime_r(&now, &time_info);
         app_state_set_time(time_info.tm_hour, time_info.tm_min);
-        servo_display_set(time_info.tm_hour, time_info.tm_min);
         vTaskDelay(pdMS_TO_TICKS(10 * 1000));   // 每10s打印一次
     }
 }
@@ -24,7 +23,6 @@ void time_sync_task(void *pv)
 void app_main(void)
 {
     // 初始化
-    ESP_ERROR_CHECK(nvs_flash_erase());
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -40,6 +38,9 @@ void app_main(void)
 
     // 主循环
     while (1) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        display_digit_at_segment(HOUR_TENS_BASE, 8);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        display_digit_at_segment(HOUR_TENS_BASE, 10);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
     }
 }
